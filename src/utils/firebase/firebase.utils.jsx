@@ -66,16 +66,13 @@ export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
   console.log("done");
 };
 
+// get Categories
 export const getCategoriesAndDocuments = async () => {
   const collectionRef = collection(db, "categories");
   const q = query(collectionRef);
 
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(docSnapshot=>docSnapshot.data())
-
-
-
-
+  return querySnapshot.docs.map((docSnapshot) => docSnapshot.data());
 };
 
 // setup create user to db
@@ -105,7 +102,7 @@ export const createUserDocumentFromAuth = async (
     }
   }
 
-  return userDocRef;
+  return userSnapshot;
   // if user data not exists
   // create / set the document with the data from userAuth in my collection
 
@@ -129,4 +126,17 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangeListener = (callback) => {
   onAuthStateChanged(auth, callback);
+};
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (userAuth) => {
+        unsubscribe();
+        resolve(userAuth);
+      },
+      reject
+    );
+  });
 };
